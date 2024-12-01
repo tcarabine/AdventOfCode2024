@@ -17,10 +17,10 @@ fn load_data(filename: &str) -> Vec<String>{
 }
 
 fn main() {
-    //let test_filename = "data/test.txt";
-    let filename = "data/input.txt";
-
+    // let test_filename = "data/test.txt";
     // let data = load_data(test_filename);
+
+    let filename = "data/input.txt";
     let data = load_data(filename);
     
     let (mut left, mut right) : (Vec<i32>,Vec<i32>) = (Vec::new(), Vec::new());
@@ -35,22 +35,28 @@ fn main() {
       right.push(split[1]);
     }
 
-    //DEBUG
-    println!("Left:\t{:?}\nRight\t{:?}", left, right);
-
     //Unstable refers to equivelence sorting. not actual stability
     let left_thread: thread::JoinHandle<Vec<i32>> = thread::spawn(move || { left.sort_unstable(); return left;});
     let right_thread: thread::JoinHandle<Vec<i32>> = thread::spawn(move || { right.sort_unstable(); return right;});
 
     left = left_thread.join().unwrap();
     right = right_thread.join().unwrap();
-    //DEBUG
-    println!("Left:\t{:?}\nRight\t{:?}", left, right);
 
-    let result = left.into_iter()
-      .zip(right.into_iter())
-      .map(|(l,r)| l.abs_diff(r))
+    let part1 = left.iter()
+      .zip(right.iter())
+      .map(|(l,r)| l.abs_diff(*r))
       .reduce(|acc,d| acc + d)
       .unwrap();
-    println!("Total: {result}");
+    println!("Part 1: {part1}");
+
+    // Part 2
+
+    let part2 = left
+      .iter()
+      .map(|value| value * (right.iter().filter(|x| *x == value).count() as i32))
+      .reduce(|acc, products| acc + products)
+      .unwrap();
+    
+      println!("Part 2: {part2}");
+
 }
