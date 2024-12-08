@@ -6,6 +6,9 @@ fn main() {
 
     let part1 = part_1(input);
     println!("Part 1\t{}", part1);
+    let part2 = part_2(input);
+    println!("Part 2\t{}", part2);
+
 }
 
 fn parse_data(line: &str) -> (i64, Vec<i64>) {
@@ -29,6 +32,11 @@ fn sum(a: i64, b: i64) -> i64 {
 
 fn mult(a: i64, b: i64) -> i64 {
     return a * b;
+}
+
+fn concat(a: i64, b: i64) -> i64 {
+    let tmp = format!("{a}{b}");
+    return tmp.parse().unwrap();
 }
 
 fn calibrates(result: &i64, values: &Vec<i64>) -> bool {
@@ -58,6 +66,34 @@ fn part_1(input: &str) -> i64 {
         .unwrap();
 }
 
+fn calibrates_concat(result: &i64, values: &Vec<i64>) -> bool {
+    // let mut operations:Vec<Vec<i64>> = vec![];
+    let mut value_iter = values.iter();
+    let mut current: Vec<i64> = vec![*value_iter.next().unwrap()];
+    let mut last: Vec<i64>;
+    while let Some(next_value) = value_iter.next() {
+        last = current.clone();
+        current = vec![];
+        for last_value in last.iter() {
+            current.push(sum(*last_value, *next_value));
+            current.push(mult(*last_value, *next_value));
+            current.push(concat(*last_value, *next_value));
+        }
+    }
+
+    return current.iter().any(|value| value == result);
+}
+
+fn part_2(input: &str) -> i64 {
+    return input
+        .lines()
+        .map(|line| parse_data(line))
+        .filter(|(key, value)| calibrates_concat(key, value))
+        .map(|(key, _)| key)
+        .reduce(|acc, x| acc + x)
+        .unwrap();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -76,10 +112,18 @@ mod tests {
     #[test]
     fn test_part_1() {
         let input = include_str!("../data/test.txt");
-        let data: HashMap<i64, Vec<i64>> = input.lines().map(|line| parse_data(line)).collect();
 
-        let result = part_1(data);
+        let result = part_1(input);
 
         assert_eq!(result, 3749);
+    }
+
+    #[test]
+    fn test_part_2() {
+        let input = include_str!("../data/test.txt");
+
+        let result = part_2(input);
+
+        assert_eq!(result, 11387);
     }
 }
