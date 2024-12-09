@@ -4,9 +4,12 @@ fn main() {
     let input = include_str!("../data/input.txt");
     let (bottom_right, locations) = parse(input);
 
-    let part1 = part1(bottom_right, locations);
+    let part1 = part1(bottom_right, &locations);
 
     println!("Part 1\t{}", part1);
+    let part2 = part2(bottom_right, &locations);
+
+    println!("Part 2\t{}", part2);
 }
 
 fn parse(input: &str) -> (Coord, HashMap<char, Vec<Coord>>) {
@@ -33,7 +36,7 @@ fn parse(input: &str) -> (Coord, HashMap<char, Vec<Coord>>) {
     return (bottom_right, locations);
 }
 
-fn part1(bottom_right: Coord, locations: HashMap<char, Vec<Coord>>) -> usize {
+fn part1(bottom_right: Coord, locations: &HashMap<char, Vec<Coord>>) -> usize {
     let mut antinodes: HashSet<Coord> = HashSet::new();
 
     for coords in locations.values() {
@@ -48,6 +51,32 @@ fn part1(bottom_right: Coord, locations: HashMap<char, Vec<Coord>>) -> usize {
 
                 if new.is_in_bounds(&bottom_right) {
                     antinodes.insert(new);
+                }
+            }
+        }
+    }
+    return antinodes.len();
+}
+
+
+fn part2(bottom_right: Coord, locations: &HashMap<char, Vec<Coord>>) -> usize {
+    let mut antinodes: HashSet<Coord> = HashSet::new();
+
+    for coords in locations.values() {
+        for c1 in coords {
+            for c2 in coords {
+                if c1 == c2 {
+                    continue;
+                }
+                let distance = c1.sub(c2);
+
+                // Antenna are antinodes
+                let mut new = *c1;
+
+                while new.is_in_bounds(&bottom_right) {
+                    antinodes.insert(new);
+                    // Skip forward after each insertion
+                    new = new.add(&distance);
                 }
             }
         }
@@ -92,8 +121,18 @@ mod tests {
         let input = include_str!("../data/test.txt");
         let (bottom_right, locations) = parse(input);
     
-        let result = part1(bottom_right, locations);
+        let result = part1(bottom_right, &locations);
     
         assert_eq!(result, 14);
+    }
+
+    #[test]
+    fn test_part_2() {
+        let input = include_str!("../data/test.txt");
+        let (bottom_right, locations) = parse(input);
+    
+        let result = part2(bottom_right, &locations);
+    
+        assert_eq!(result, 34);
     }
 }
