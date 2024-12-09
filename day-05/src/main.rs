@@ -128,16 +128,6 @@ fn compare(a: &i32, b:&i32, rules: &HashMap<i32, Vec<i32>>) -> Ordering {
     };
 }
 
-fn fix_with_rule(pos: usize, afters: &Vec<i32>, update: &Vec<i32>) -> Vec<i32> {
-    let mut fix = update.to_vec();
-    update
-        .iter()
-        .enumerate()
-        .filter(|(_, value)| afters.contains(value))
-        .for_each(|(ix,_)| if ix > pos {fix.swap(ix, pos); println!("{:?}", fix)});
-    return fix;
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

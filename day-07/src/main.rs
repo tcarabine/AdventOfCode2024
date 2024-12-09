@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 fn main() {
     let input = include_str!("../data/input.txt");
     //let input = include_str!("../data/test.txt");
